@@ -118,7 +118,7 @@ function! snake#SnakeBuffer(count, forceNew)
 	set so=0 noscb
 	let i = 1
 	while i <= a:count
-		botright vsplit
+		belowright vsplit
 		" let l:gohere=l:winh*i
 		" echo l:gohere
 		normal Ljzt

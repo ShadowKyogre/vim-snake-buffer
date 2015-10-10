@@ -16,7 +16,28 @@ function! snake#SnakeGuess()
 	let l:maxwidth = &columns
 	let l:longestlineln = max(map(range(1, line('$')), "col([v:val, '$'])")) - 1
 	let l:colwidth = l:longestlineln+&numberwidth+&foldcolumn
-	return l:maxwidth / l:colwidth
+	let l:maxforlinewidth = l:maxwidth / l:colwidth
+	let curpos = getpos('.')
+	let tmpcurpos = curpos
+	let lastline = getpos('$')[1]
+	let screenfuls = -1
+	while curpos[1] != lastline
+		let prevpos = curpos
+		normal Ljzt
+		let curpos = getpos('.')
+		if curpos[1] != prevpos[1]
+			let screenfuls = screenfuls + 1
+		endif
+	endwhile
+	call setpos('.', tmpcurpos)
+
+	" echo l:screenfuls l:maxforlinewidth
+
+	if l:screenfuls < l:maxforlinewidth
+		return l:screenfuls
+	else
+		return l:maxforlinewidth
+	endif
 endfunction
 
 function! snake#SnakeAdjust()

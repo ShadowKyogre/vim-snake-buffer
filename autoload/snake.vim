@@ -1,5 +1,24 @@
 let s:wingroups = {}
 
+function! snake#SnakeToggle(...)
+	if exists('w:snakegroup')
+		call snake#SnakeClose(0)
+	else
+		if a:0 == 0
+			call snake#SnakeBuffer(snake#SnakeGuess(), 0)
+		else
+			call snake#SnakeBuffer(a:1, 0)
+		endif
+	endif
+endfunction
+
+function! snake#SnakeGuess()
+	let l:maxwidth = &columns
+	let l:longestlineln = max(map(range(1, line('$')), "col([v:val, '$'])")) - 1
+	let l:colwidth = l:longestlineln+&numberwidth+&foldcolumn
+	return l:maxwidth / l:colwidth
+endfunction
+
 function! snake#SnakeAdjust()
 	if exists('w:snakegroup')
 		let l:curwinno = winnr()
@@ -25,6 +44,7 @@ function! snake#SnakeAdjust()
 
 		let i = 0
 		for l:winno in l:winnos
+			exe l:winno . 'wincmd w'
 			setl scb
 		endfor
 		exe l:curwinno . 'wincmd w'

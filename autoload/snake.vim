@@ -1,5 +1,36 @@
 let s:wingroups = {}
 
+function! snake#SnakeAdjust()
+	if exists('w:snakegroup')
+		let l:curwinno = winnr()
+		let l:winnos = s:wingroups[w:snakegroup]
+		let l:nitems = len(l:winnos)
+		exec w:snakegroup . 'wincmd w'
+		let l:cursorpos = getpos('.')
+
+		let i = 1
+		while i < l:nitems
+			exec l:winnos[i] . 'wincmd w'
+			setl noscb
+			call setpos('.', l:cursorpos)
+			
+			let j = 0
+			while j < i
+				normal Ljzt
+				let j = j + 1
+			endwhile
+
+			let i = i + 1
+		endwhile
+
+		let i = 0
+		for l:winno in l:winnos
+			setl scb
+		endfor
+		exe l:curwinno . 'wincmd w'
+	endif
+endfunction
+
 function! snake#SnakeClose(closeOriginator)
 	if exists('w:snakegroup')
 		let l:snakegrouptmp = w:snakegroup
@@ -39,7 +70,7 @@ function! snake#SnakeBuffer(count, forceNew)
 		" echo l:gohere
 		normal Ljzt
 		call add(l:winnos, winnr())
-		let i=i+1
+		let i = i + 1
 	endwhile
 
 	let s:wingroups[l:winnos[0]] = l:winnos

@@ -1,5 +1,15 @@
 let s:wingroups = {}
 
+function! snake#SnakeDetach()
+	if exists('w:snakegroup')
+		let l:snakegroupidxtmp = index(s:wingroups[w:snakegroup], winnr())
+		unlet s:wingroups[w:snakegroup][l:snakegroupidxtmp]
+		if len(s:wingroups[w:snakegroup]) == 0
+			unlet s:wingroups[w:snakegroup]
+		endif
+	endif
+endfunction
+
 function! snake#SnakeToggle(useTextWidth, ...)
 	"if exists('a:1')
 	"	echo a:useTextWidth a:0 a:1
@@ -17,8 +27,24 @@ function! snake#SnakeToggle(useTextWidth, ...)
 	endif
 endfunction
 
+function! snake#SnakeVisibleLines(start, end)
+	let result=0
+	let i=a:start
+
+	while (i <= a:end)
+	if foldclosed(i) > 0
+		let i = foldclosedend(i)+1
+		continue
+		endif
+		let i+=1
+		let result += 1
+	endw
+	return result
+endfunction
+
 function! snake#SnakeGuess(useTextWidth)
 	let l:maxwidth = winwidth(0)
+	let l:height = winheight(0)
 	if a:useTextWidth
 		let l:colwidth = &textwidth+&numberwidth+&foldcolumn
 	else
@@ -26,19 +52,14 @@ function! snake#SnakeGuess(useTextWidth)
 		let l:colwidth = l:longestlineln+&numberwidth+&foldcolumn
 	endif
 	let l:maxforlinewidth = (l:maxwidth / l:colwidth) - 1
-	let curpos = getpos('.')
-	let tmpcurpos = curpos
 	let lastline = getpos('$')[1]
-	let screenfuls = -1
-	while curpos[1] != lastline && screenfuls < l:maxforlinewidth
-		let prevpos = curpos
-		normal Ljzt
-		let curpos = getpos('.')
-		if curpos[1] != prevpos[1]
-			let screenfuls = screenfuls + 1
-		endif
-	endwhile
-	call setpos('.', tmpcurpos)
+	let visilines = snake#SnakeVisibleLines(1, lastline)
+	let screenfuls = visilines / l:height
+	let screenfulsasf = (visilines + 0.0) / l:height
+
+	if screenfuls != screenfulsasf
+		let screenfuls = screenfuls+1
+	endif
 
 	" echo l:screenfuls l:maxforlinewidth
 

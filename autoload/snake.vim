@@ -18,7 +18,7 @@ function! snake#SnakeToggle(useTextWidth, ...)
 endfunction
 
 function! snake#SnakeGuess(useTextWidth)
-	let l:maxwidth = &columns
+	let l:maxwidth = winwidth(0)
 	if a:useTextWidth
 		let l:colwidth = &textwidth+&numberwidth+&foldcolumn
 	else
@@ -42,7 +42,7 @@ function! snake#SnakeGuess(useTextWidth)
 
 	" echo l:screenfuls l:maxforlinewidth
 
-	if l:screenfuls < l:maxforlinewidth
+	if l:screenfuls < l:maxforlinewidth && l:screenfuls >= 1
 		return l:screenfuls
 	else
 		return l:maxforlinewidth
@@ -101,7 +101,7 @@ function! snake#SnakeClose(closeOriginator)
 endfunction
 
 function! snake#SnakeBuffer(count, forceNew)
-	if count == 0 && !a:forceNew
+	if a:count == 0 && !a:forceNew
 		return
 	endif
 	if exists('w:snakegroup')

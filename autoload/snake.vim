@@ -1,12 +1,21 @@
 let s:wingroups = {}
 
-function! snake#SnakeDetach()
+function! snake#SnakeDetach(forceQuit)
+	" echo s:wingroups
 	if exists('w:snakegroup')
-		let l:snakegroupidxtmp = index(s:wingroups[w:snakegroup], winnr())
-		unlet s:wingroups[w:snakegroup][l:snakegroupidxtmp]
+		unlet s:wingroups[w:snakegroup][-1]
 		if len(s:wingroups[w:snakegroup]) == 0
 			unlet s:wingroups[w:snakegroup]
+			cuna <script> <silent> <buffer> q
+			cuna <script> <silent> <buffer> quit
 		endif
+	endif
+	" echo s:wingroups
+
+	if (a:forceQuit)
+		quit!
+	else
+		quit
 	endif
 endfunction
 
@@ -112,6 +121,8 @@ function! snake#SnakeClose(closeOriginator)
 			if l:winno == l:snakegrouptmp
 				unlet s:wingroups[l:snakegrouptmp]
 				unlet w:snakegroup
+				cuna <script> <silent> <buffer> q
+				cuna <script> <silent> <buffer> quit
 			endif
 			if !a:closeOriginator && l:winno == l:snakegrouptmp
 				continue
@@ -136,6 +147,8 @@ function! snake#SnakeBuffer(count, forceNew)
 	" let l:winh = winheight(0)
 	let l:winnos = []
 	call add(l:winnos, winnr())
+	cabbrev <script> <silent> <buffer> q SnakeDetach
+	cabbrev <script> <silent> <buffer> quit SnakeDetach
 	set so=0 noscb
 	let i = 1
 	while i <= a:count

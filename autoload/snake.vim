@@ -95,7 +95,7 @@ function! snake#SnakeAdjust()
 			
 			let j = 0
 			while j < i
-				normal Ljzt
+				normal! Ljzt
 				let j = j + 1
 			endwhile
 
@@ -155,7 +155,7 @@ function! snake#SnakeBuffer(count, forceNew)
 		belowright vsplit
 		" let l:gohere=l:winh*i
 		" echo l:gohere
-		normal Ljzt
+		normal! Ljzt
 		call add(l:winnos, winnr())
 		let i = i + 1
 	endwhile
